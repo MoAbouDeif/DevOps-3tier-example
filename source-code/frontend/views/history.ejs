@@ -1,86 +1,45 @@
-<%- include('partials/header', { title: title, theme: theme }) %>
+<%- include('partials/header', { title: title, currentPage: currentPage }) %>
 
-<main class="py-5">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h1 class="h2 mb-0">
-                        <i class="fas fa-history me-2"></i>Calculation History
-                    </h1>
-                    <a href="/" class="btn btn-primary">
-                        <i class="fas fa-calculator me-2"></i>New Calculation
-                    </a>
-                </div>
-                
-                <% if (typeof message !== 'undefined' && message) { %>
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="fas fa-check-circle me-2"></i>
-                        <%= message %>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                <% } %>
-                
-                <% if (typeof error !== 'undefined' && error) { %>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        <%= error %>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                <% } %>
-                
-                <% if (history && history.length > 0) { %>
-                    <div class="row">
-                        <% history.forEach(item => { %>
-                            <div class="col-md-6 col-lg-4 mb-4">
-                                <div class="history-card card h-100">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <span class="history-operation badge bg-primary">
-                                                <%= item.operation.toUpperCase() %>
-                                            </span>
-                                            <span class="history-result">
-                                                <%= item.result %>
-                                            </span>
-                                        </div>
-                                        
-                                        <p class="history-numbers mb-3">
-                                            <%= item.operand1 %> 
-                                            <%= getOperationSymbol(item.operation) %> 
-                                            <%= item.operand2 %> 
-                                            = <strong><%= item.result %></strong>
-                                        </p>
-                                        
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <small class="text-muted">
-                                                <i class="fas fa-clock me-1"></i>
-                                                <%= new Date(item.created_at).toLocaleString() %>
-                                            </small>
-                                            
-                                            <form action="/calculation/<%= item.id %>/delete" method="POST" class="delete-form">
-                                                <button type="submit" class="delete-btn btn btn-sm" data-bs-toggle="tooltip" title="Delete calculation">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        <% }) %>
-                    </div>
-                <% } else { %>
-                    <div class="empty-state text-center py-5">
-                        <i class="fas fa-history text-muted"></i>
-                        <h3 class="h4 mt-3">No calculation history yet</h3>
-                        <p class="text-muted mb-4">Perform some calculations to see them here</p>
-                        <a href="/" class="btn btn-primary">
-                            <i class="fas fa-calculator me-2"></i>Go to Calculator
-                        </a>
-                    </div>
-                <% } %>
+        <!-- History Tab -->
+        <% if (typeof message !== 'undefined' && message) { %>
+            <div class="response success">
+                <i class="fas fa-check-circle me-2"></i>
+                <%= message %>
             </div>
+        <% } %>
+        
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="response error">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <%= error %>
+            </div>
+        <% } %>
+        
+        <div class="history-grid" id="historyGrid">
+            <% if (history && history.length > 0) { %>
+                <% history.forEach(item => { %>
+                    <div class="history-item">
+                        <div class="history-operation"><%= item.operation.toUpperCase() %> Operation</div>
+                        <div class="history-numbers"><%= item.operand1 %> <%= getOperationSymbol(item.operation) %> <%= item.operand2 %></div>
+                        <div class="history-result">= <%= item.result %></div>
+                        <div class="history-date">
+                            <i class="fas fa-clock"></i> 
+                            Calculated on: <%= new Date(item.created_at).toLocaleString() %>
+                        </div>
+                        <form action="/calculation/<%= item.id %>/delete" method="POST" class="delete-form">
+                            <button type="submit" class="delete-btn">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="empty-state">
+                    <i class="fas fa-history"></i>
+                    <h3>No calculation history yet</h3>
+                    <p>Perform some calculations to see them here</p>
+                </div>
+            <% } %>
         </div>
-    </div>
-</main>
 
 <%- include('partials/footer') %>

@@ -31,8 +31,8 @@ app.locals.getOperationSymbol = getOperationSymbol;
 // Routes
 app.get('/', (req, res) => {
   res.render('index', { 
-    title: 'Calculator',
-    theme: 'light',
+    title: 'Calculator Pro',
+    currentPage: 'calculator',
     result: null,
     calculation: null,
     error: null
@@ -44,7 +44,7 @@ app.get('/history', async (req, res) => {
     const response = await axios.get(`${API_BASE_URL}/history?limit=20`);
     res.render('history', {
       title: 'Calculation History',
-      theme: 'light',
+      currentPage: 'history',
       history: response.data.history,
       error: req.query.error || null,
       message: req.query.message || null
@@ -52,7 +52,7 @@ app.get('/history', async (req, res) => {
   } catch (error) {
     res.render('history', {
       title: 'Calculation History',
-      theme: 'light',
+      currentPage: 'history',
       history: [],
       error: 'Failed to fetch history',
       message: null
@@ -70,8 +70,8 @@ app.post('/calculate', async (req, res) => {
     });
     
     res.render('index', {
-      title: 'Calculator',
-      theme: 'light',
+      title: 'Calculator Pro',
+      currentPage: 'calculator',
       result: response.data.result,
       calculation: { a, b, operation, id: response.data.id },
       error: null
@@ -83,8 +83,8 @@ app.post('/calculate', async (req, res) => {
     }
     
     res.render('index', {
-      title: 'Calculator',
-      theme: 'light',
+      title: 'Calculator Pro',
+      currentPage: 'calculator',
       result: null,
       calculation: req.body,
       error: errorMessage

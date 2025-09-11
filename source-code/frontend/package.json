@@ -1,7 +1,7 @@
 {
   "name": "calculator-frontend",
   "version": "1.0.0",
-  "description": "Modern frontend for calculator API with Bootstrap",
+  "description": "Modern frontend for calculator API with DeifOps-inspired design",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -12,13 +12,12 @@
     "ejs": "^3.1.9",
     "axios": "^1.6.0",
     "dotenv": "^16.3.1",
-    "morgan": "^1.10.0",
-    "express-ejs-layouts": "^2.5.1"
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
   },
-  "keywords": ["calculator", "frontend", "nodejs", "bootstrap"],
-  "author": "Your Name",
+  "keywords": ["calculator", "frontend", "nodejs", "DeifOps"],
+  "author": "Mohamed AbouDeif",
   "license": "MIT"
 }
