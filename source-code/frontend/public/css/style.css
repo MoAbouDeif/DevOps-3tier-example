@@ -1,0 +1,495 @@
+:root {
+  /* Color scheme from the reference website */
+  --primary-blue: #1a56db;
+  --primary-dark-blue: #0d1b2a;
+  --primary-light-blue: #2c5282;
+  --accent-blue: #2563eb;
+  --secondary-gray: #4b5563;
+  --light-gray: #9ca3af;
+  --background-light: #f8fafc;
+  --background-dark: #0f172a;
+  --text-light: #f1f5f9;
+  --text-dark: #1e293b;
+  --border-light: #e2e8f0;
+  --success-green: #10b981;
+  --error-red: #ef4444;
+  --warning-orange: #f59e0b;
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Border radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--background-light);
+  color: var(--text-dark);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header Styles matching reference site */
+.navbar {
+  background: var(--primary-dark-blue);
+  padding: var(--spacing-md) 0;
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: var(--text-light);
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.navbar-nav {
+  display: flex;
+  gap: var(--spacing-lg);
+  align-items: center;
+}
+
+.nav-link {
+  color: var(--text-light);
+  text-decoration: none;
+  font-weight: 500;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.theme-toggle {
+  background: transparent;
+  border: 2px solid var(--text-light);
+  color: var(--text-light);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+/* Main content */
+.main-container {
+  flex: 1;
+  padding: var(--spacing-xl) 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+/* Calculator card matching reference design */
+.calculator-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-light);
+  max-width: 500px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.calculator-header {
+  background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark-blue));
+  color: white;
+  padding: var(--spacing-lg);
+  text-align: center;
+}
+
+.calculator-body {
+  padding: var(--spacing-lg);
+}
+
+/* Form elements */
+.form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  color: var(--secondary-gray);
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background-color: white;
+  color: var(--text-dark);
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
+}
+
+/* Operation buttons grid */
+.operation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.operation-btn {
+  padding: var(--spacing-md);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: white;
+  color: var(--text-dark);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+.operation-btn:hover {
+  border-color: var(--primary-blue);
+  transform: translateY(-1px);
+}
+
+.operation-btn.selected {
+  background: var(--primary-blue);
+  color: white;
+  border-color: var(--primary-blue);
+  box-shadow: var(--shadow-md);
+}
+
+/* Calculate button */
+.calculate-btn {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: none;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+.calculate-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Result display */
+.result-card {
+  background: var(--background-light);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-top: var(--spacing-lg);
+  text-align: center;
+}
+
+.result-label {
+  color: var(--secondary-gray);
+  font-size: 1rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.result-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary-blue);
+  margin: var(--spacing-md) 0;
+}
+
+.result-calculation {
+  color: var(--secondary-gray);
+  font-size: 1.1rem;
+}
+
+/* History grid */
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-lg);
+}
+
+.history-item {
+  background: white;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.history-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-blue);
+}
+
+.history-operation {
+  font-weight: 700;
+  color: var(--primary-blue);
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--spacing-sm);
+}
+
+.history-numbers {
+  color: var(--secondary-gray);
+  font-size: 1rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.history-result {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--success-green);
+  margin: var(--spacing-sm) 0;
+}
+
+.history-date {
+  color: var(--light-gray);
+  font-size: 0.875rem;
+  border-top: 1px solid var(--border-light);
+  padding-top: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+/* Delete button */
+.delete-btn {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  padding: var(--spacing-sm);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--error-red);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.8;
+}
+
+.delete-btn:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--light-gray);
+}
+
+.empty-state i {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-md);
+  color: var(--light-gray);
+}
+
+/* Footer */
+.footer {
+  background: var(--primary-dark-blue);
+  color: var(--text-light);
+  padding: var(--spacing-lg) 0;
+  margin-top: auto;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+.footer-links {
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+.footer-link {
+  color: var(--text-light);
+  text-decoration: none;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.footer-link:hover {
+  opacity: 1;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .navbar-container {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .navbar-nav {
+    gap: var(--spacing-md);
+  }
+  
+  .operation-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .history-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .calculator-card {
+    margin: 0 var(--spacing-sm);
+  }
+  
+  .footer-links {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .calculator-body {
+    padding: var(--spacing-md);
+  }
+  
+  .form-control {
+    padding: var(--spacing-sm);
+  }
+  
+  .operation-btn {
+    padding: var(--spacing-sm);
+  }
+  
+  .calculate-btn {
+    padding: var(--spacing-sm);
+  }
+  
+  .result-value {
+    font-size: 2rem;
+  }
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  background-color: var(--background-dark);
+  color: var(--text-light);
+}
+
+[data-theme="dark"] .calculator-card,
+[data-theme="dark"] .history-item,
+[data-theme="dark"] .form-control {
+  background-color: var(--primary-dark-blue);
+  color: var(--text-light);
+  border-color: var(--primary-light-blue);
+}
+
+[data-theme="dark"] .result-card {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: var(--primary-light-blue);
+}
+
+[data-theme="dark"] .form-label,
+[data-theme="dark"] .result-label,
+[data-theme="dark"] .result-calculation,
+[data-theme="dark"] .history-numbers {
+  color: var(--light-gray);
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Focus styles for keyboard navigation */
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--primary-blue);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --border-light: #000000;
+    --text-dark: #000000;
+  }
+  
+  [data-theme="dark"] {
+    --border-light: #ffffff;
+    --text-light: #ffffff;
+  }
+}
