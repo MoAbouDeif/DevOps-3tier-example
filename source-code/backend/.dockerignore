@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.env.tmp
+.venv/
+Dockerfile
+.gitignore
+tests/
+pytest.ini
+conftest.py

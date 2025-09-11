@@ -1,6 +1,5 @@
 import os
-import psycopg2
-from psycopg2 import sql
+import psycopg
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,33 +13,29 @@ def init_db(app):
 
     # Create table if it doesn't exist
     try:
-        conn = get_connection(app)
-        cur = conn.cursor()
-        cur.execute(
-            """
-            CREATE TABLE IF NOT EXISTS calculations (
-                id SERIAL PRIMARY KEY,
-                operand1 FLOAT NOT NULL,
-                operand2 FLOAT NOT NULL,
-                operation VARCHAR(10) NOT NULL,
-                result FLOAT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-            """
-        )
-        conn.commit()
-        cur.close()
-        conn.close()
+        with get_connection(app) as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    CREATE TABLE IF NOT EXISTS calculations (
+                        id SERIAL PRIMARY KEY,
+                        operand1 FLOAT NOT NULL,
+                        operand2 FLOAT NOT NULL,
+                        operation VARCHAR(10) NOT NULL,
+                        result FLOAT NOT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                    """
+                )
+            conn.commit()
         app.logger.info("Database table initialized successfully")
     except Exception as e:
         app.logger.error(f"Error creating table: {str(e)}")
         raise e
 
 def get_connection(app):
-    return psycopg2.connect(
-        host=app.config["POSTGRES_HOST"],
-        user=app.config["POSTGRES_USER"],
-        password=app.config["POSTGRES_PASSWORD"],
-        database=app.config["POSTGRES_DB"],
-        port=app.config["POSTGRES_PORT"]
+    dsn = (
+        f"postgresql://{app.config['POSTGRES_USER']}:{app.config['POSTGRES_PASSWORD']}"
+        f"@{app.config['POSTGRES_HOST']}:{app.config['POSTGRES_PORT']}/{app.config['POSTGRES_DB']}"
     )
+    return psycopg.connect(dsn)
