@@ -1,6 +1,7 @@
 FROM python:3.13.7-slim
 
-ENV DEBUG=True
+ARG DEBUG=True
+ENV DEBUG=$DEBUG
 
 WORKDIR /app
 
@@ -22,8 +23,6 @@ RUN useradd --create-home backend
 USER backend
 
 EXPOSE 5000
-
-HEALTHCHECK --interval=30s --timeout=5s CMD wget -q --spider http://localhost:5000 || exit 1
 
 ENTRYPOINT ["gunicorn"]
 CMD ["--bind=0.0.0.0:5000", "app:app"]

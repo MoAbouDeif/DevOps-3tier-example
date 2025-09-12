@@ -11,28 +11,38 @@ const HistoryTab = ({ showNotification, setLoading }) => {
 
   const abortControllerRef = useRef(null);
 
-const fetchHistory = useCallback(async () => {
-  if (abortControllerRef.current) {
-    abortControllerRef.current.abort();
-  }
-  abortControllerRef.current = new AbortController();
-  setLoading(true);
-
-  try {
-    const response = await fetch('http://localhost:5000/history', {
-      signal: abortControllerRef.current.signal,
-    });
-    if (!response.ok) throw new Error('Network error');
-    const data = await response.json();
-    setHistory(data);
-  } catch (error) {
-    if (error.name !== 'AbortError') {
-      showNotification('Failed to fetch history');
+  const fetchHistory = useCallback(async () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
     }
-  } finally {
-    setLoading(false);
-  }
-}, [setLoading, setHistory, showNotification]);
+    abortControllerRef.current = new AbortController();
+    setLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:5000/history', {
+        signal: abortControllerRef.current.signal,
+      });
+      if (!response.ok) throw new Error('Network error');
+      const data = await response.json();
+
+      console.log("History API response:", data);
+
+      // Ensure history is always an array
+      if (Array.isArray(data)) {
+        setHistory(data);
+      } else if (Array.isArray(data.history)) {
+        setHistory(data.history);
+      } else {
+        setHistory([]); // fallback to empty array
+      }
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        showNotification('Failed to fetch history');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [setLoading, showNotification]);
 
   useEffect(() => {
     fetchHistory();
