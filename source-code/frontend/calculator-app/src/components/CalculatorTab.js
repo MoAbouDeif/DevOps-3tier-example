@@ -10,16 +10,18 @@ const CalculatorTab = ({ showNotification, setLoading }) => {
   const [result, setResult] = useState(null);
   const [errors, setErrors] = useState({});
 
+  // Use env variable for API base URL (default to /api)
+  const API_BASE = process.env.REACT_APP_API_BASE_URL || '/api';
+
   const validateForm = () => {
     const newErrors = {};
-    
-    // Check if inputs are empty
+
     if (!formData.a.trim()) {
       newErrors.a = 'First number is required';
     } else if (isNaN(Number(formData.a))) {
       newErrors.a = 'Must be a valid number';
     }
-    
+
     if (!formData.b.trim()) {
       newErrors.b = 'Second number is required';
     } else if (isNaN(Number(formData.b))) {
@@ -27,7 +29,7 @@ const CalculatorTab = ({ showNotification, setLoading }) => {
     } else if (formData.operation === 'divide' && Number(formData.b) === 0) {
       newErrors.b = 'Cannot divide by zero';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -38,8 +40,7 @@ const CalculatorTab = ({ showNotification, setLoading }) => {
       ...prev,
       [name]: value
     }));
-    
-    // Clear error when user types
+
     if (errors[name]) {
       setErrors(prev => {
         const newErrors = { ...prev };
@@ -51,12 +52,12 @@ const CalculatorTab = ({ showNotification, setLoading }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/calculate', {
+      const response = await fetch(`${API_BASE}/calculate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,17 +68,16 @@ const CalculatorTab = ({ showNotification, setLoading }) => {
           operation: formData.operation
         })
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.error || 'Calculation failed');
       }
-      
+
       setResult(data.result);
       showNotification('Calculation successful!', 'success');
-      
-      // Reset form
+
       setFormData({
         a: '',
         b: '',
@@ -106,7 +106,7 @@ const CalculatorTab = ({ showNotification, setLoading }) => {
           />
           {errors.a && <span className="error-text" data-testid="error-a">{errors.a}</span>}
         </div>
-        
+
         <div className="input-group">
           <label htmlFor="operation">Operation</label>
           <select
@@ -122,7 +122,7 @@ const CalculatorTab = ({ showNotification, setLoading }) => {
             <option value="divide">Divide (÷)</option>
           </select>
         </div>
-        
+
         <div className="input-group">
           <label htmlFor="b">Second Number</label>
           <input
@@ -136,16 +136,16 @@ const CalculatorTab = ({ showNotification, setLoading }) => {
           />
           {errors.b && <span className="error-text" data-testid="error-b">{errors.b}</span>}
         </div>
-        
-        <button 
-          type="submit" 
+
+        <button
+          type="submit"
           className="calculate-btn"
           data-testid="calculate-button"
         >
           Calculate
         </button>
       </form>
-      
+
       {result !== null && (
         <div className="result-display">
           <h3>Result: {result}</h3>

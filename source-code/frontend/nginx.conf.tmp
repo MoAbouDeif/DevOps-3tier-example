@@ -5,20 +5,30 @@ server {
     root /usr/share/nginx/html;
     index index.html; 
 
-    location /healz/ {
-        return 200;
+    # --- Health Probes ---
+    location /healthz {
+        return 200 "alive\n";
+        add_header Content-Type text/plain;
     }
 
-    location /probe/ {
-        return 200;
-    }  
-                   
-    
+    location /ready {
+        if (-f /usr/share/nginx/html/index.html) {
+            return 200 "ready\n";
+        }
+        return 503 "not ready\n";
+        add_header Content-Type text/plain;
+    }
+
+    location /startup {
+        return 200 "started\n";
+        add_header Content-Type text/plain;
+    }
+
+    # API reverse proxy
     location /api/ {
         proxy_pass http://${BACKEND_HOST}:${BACKEND_PORT}/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
-
 
         if ($request_method = 'OPTIONS') {
             add_header 'Access-Control-Allow-Origin' 'http://${DOMAIN_NAME}';
@@ -30,18 +40,31 @@ server {
         }
     }
 }
+
 server {
     listen 80 default_server;
     server_name _;
-    
-    location /healz/ {
-        return 200;
+
+    # --- Health Probes ---
+    location /healthz {
+        return 200 "alive\n";
+        add_header Content-Type text/plain;
     }
 
-    location /probe/ {
-        return 200;
-    }  
-    
+    location /ready {
+        if (-f /usr/share/nginx/html/index.html) {
+            return 200 "ready\n";
+        }
+        return 503 "not ready\n";
+        add_header Content-Type text/plain;
+    }
+
+    location /startup {
+        return 200 "started\n";
+        add_header Content-Type text/plain;
+    }
+
+    # Default deny for unrecognized hosts
     location / {
         return 401;
     }  

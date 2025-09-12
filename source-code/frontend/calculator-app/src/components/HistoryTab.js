@@ -11,6 +11,9 @@ const HistoryTab = ({ showNotification, setLoading }) => {
 
   const abortControllerRef = useRef(null);
 
+  // Use env variable for API base URL (default to /api for nginx proxy)
+  const API_BASE = process.env.REACT_APP_API_BASE_URL || '/api';
+
   const fetchHistory = useCallback(async () => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -19,13 +22,11 @@ const HistoryTab = ({ showNotification, setLoading }) => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/history', {
+      const response = await fetch(`${API_BASE}/history`, {
         signal: abortControllerRef.current.signal,
       });
       if (!response.ok) throw new Error('Network error');
       const data = await response.json();
-
-      console.log("History API response:", data);
 
       // Ensure history is always an array
       if (Array.isArray(data)) {
@@ -42,7 +43,7 @@ const HistoryTab = ({ showNotification, setLoading }) => {
     } finally {
       setLoading(false);
     }
-  }, [setLoading, showNotification]);
+  }, [setLoading, showNotification, API_BASE]);
 
   useEffect(() => {
     fetchHistory();
@@ -57,7 +58,7 @@ const HistoryTab = ({ showNotification, setLoading }) => {
   const handleViewDetails = async (id) => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:5000/calculation/${id}`);
+      const response = await fetch(`${API_BASE}/calculation/${id}`);
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error || 'Failed to fetch calculation details');
@@ -81,7 +82,7 @@ const HistoryTab = ({ showNotification, setLoading }) => {
     }
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:5000/calculation/${id}`, {
+      const response = await fetch(`${API_BASE}/calculation/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -101,7 +102,7 @@ const HistoryTab = ({ showNotification, setLoading }) => {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:5000/calculation/${selectedItem.id}`,
+        `${API_BASE}/calculation/${selectedItem.id}`,
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -131,7 +132,7 @@ const HistoryTab = ({ showNotification, setLoading }) => {
           className="refresh-btn"
           data-testid="refresh-button"
         >
-          <i className="fas fa-sync-alt"></i> Refresh
+          <i className="fas fa-sync-alt" /> Refresh
         </button>
       </div>
 

@@ -18,13 +18,25 @@ const HistoryItem = ({ item, onViewDetails, onEdit, onDelete }) => {
         {new Date(item.created_at).toLocaleString()}
       </div>
       <div className="item-actions">
-        <button onClick={() => onViewDetails(item.id)} className="action-btn view">
+        <button
+          onClick={() => onViewDetails(item.id)}
+          className="action-btn view"
+          aria-label="view"
+        >
           <i className="fas fa-eye"></i>
         </button>
-        <button onClick={() => onEdit(item)} className="action-btn edit">
+        <button
+          onClick={() => onEdit(item)}
+          className="action-btn edit"
+          aria-label="edit"
+        >
           <i className="fas fa-edit"></i>
         </button>
-        <button onClick={() => onDelete(item.id)} className="action-btn delete">
+        <button
+          onClick={() => onDelete(item.id)}
+          className="action-btn delete"
+          aria-label="delete"
+        >
           <i className="fas fa-trash"></i>
         </button>
       </div>
