@@ -1,7 +1,7 @@
 import pytest
 from models import CalculationModel
 from unittest.mock import patch, MagicMock
-from datetime import datetime  # Add this import
+from datetime import datetime
 
 @pytest.fixture
 def mock_app():
@@ -23,8 +23,8 @@ def test_create_valid_operation(mock_app):
         mock_conn.cursor.return_value = mock_cursor
         mock_cursor.fetchone.return_value = [1]
         
-        calculation_id = CalculationModel.create(mock_app, 1, 2, "add", 3)
-        assert calculation_id == 1
+        result = CalculationModel.create(mock_app, 1, 2, "add", 3)
+        assert result["id"] == 1
         assert mock_conn.commit.called
         assert mock_cursor.execute.called
         mock_conn.close.assert_called_once()
@@ -39,7 +39,6 @@ def test_get_history_valid_limit(mock_app):
         mock_cursor = MagicMock()
         mock_get_connection.return_value = mock_conn
         mock_conn.cursor.return_value = mock_cursor
-        # Use datetime object instead of string
         mock_cursor.fetchall.return_value = [
             (1, 1, 2, "add", 3, datetime(2023, 1, 1, 0, 0, 0))
         ]
@@ -55,7 +54,6 @@ def test_get_by_id_found(mock_app):
         mock_cursor = MagicMock()
         mock_get_connection.return_value = mock_conn
         mock_conn.cursor.return_value = mock_cursor
-        # Use datetime object instead of string
         mock_cursor.fetchone.return_value = (1, 1, 2, "add", 3, datetime(2023, 1, 1, 0, 0, 0))
         
         calculation = CalculationModel.get_by_id(mock_app, 1)
@@ -84,8 +82,21 @@ def test_update_success(mock_app):
         mock_cursor.rowcount = 1
         
         updated = CalculationModel.update(mock_app, 1, 5, 3, "add", 8)
-        assert updated is True
+        assert updated == {"id": 1, "operand1": 5, "operand2": 3, "operation": "add", "result": 8}
         assert mock_conn.commit.called
+        mock_conn.close.assert_called_once()
+
+def test_update_not_found(mock_app):
+    with patch('models.get_connection') as mock_get_connection:
+        mock_conn = MagicMock()
+        mock_cursor = MagicMock()
+        mock_get_connection.return_value = mock_conn
+        mock_conn.cursor.return_value = mock_cursor
+        mock_cursor.rowcount = 0
+        
+        updated = CalculationModel.update(mock_app, 999, 5, 3, "add", 8)
+        assert updated is None
+        mock_conn.commit.called
         mock_conn.close.assert_called_once()
 
 def test_delete_success(mock_app):
@@ -98,5 +109,18 @@ def test_delete_success(mock_app):
         
         deleted = CalculationModel.delete(mock_app, 1)
         assert deleted is True
+        assert mock_conn.commit.called
+        mock_conn.close.assert_called_once()
+
+def test_delete_failure(mock_app):
+    with patch('models.get_connection') as mock_get_connection:
+        mock_conn = MagicMock()
+        mock_cursor = MagicMock()
+        mock_get_connection.return_value = mock_conn
+        mock_conn.cursor.return_value = mock_cursor
+        mock_cursor.rowcount = 0
+        
+        deleted = CalculationModel.delete(mock_app, 999)
+        assert deleted is False
         assert mock_conn.commit.called
         mock_conn.close.assert_called_once()
