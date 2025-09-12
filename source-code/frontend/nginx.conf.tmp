@@ -1,0 +1,48 @@
+server {
+    listen 80;
+    server_name ${DOMAIN_NAME};
+
+    root /usr/share/nginx/html;
+    index index.html; 
+
+    location /healz/ {
+        return 200;
+    }
+
+    location /probe/ {
+        return 200;
+    }  
+                   
+    
+    location /api/ {
+        proxy_pass http://${BACKEND_HOST}:${BACKEND_PORT}/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+
+
+        if ($request_method = 'OPTIONS') {
+            add_header 'Access-Control-Allow-Origin' 'http://${DOMAIN_NAME}';
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+            add_header 'Access-Control-Allow-Headers' 'Content-Type';
+            add_header 'Access-Control-Allow-Credentials' 'true';
+            add_header 'Content-Length' 0;
+            return 204;
+        }
+    }
+}
+server {
+    listen 80 default_server;
+    server_name _;
+    
+    location /healz/ {
+        return 200;
+    }
+
+    location /probe/ {
+        return 200;
+    }  
+    
+    location / {
+        return 401;
+    }  
+}

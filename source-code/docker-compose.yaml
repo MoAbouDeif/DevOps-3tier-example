@@ -1,0 +1,55 @@
+services:
+  frontend:
+    image: calculator-frontend
+    build:
+      context: ./frontend/
+    pull_policy: build
+    networks:
+      - calc_net
+    environment:
+      DOMAIN_NAME: localhost
+      BACKEND_HOST: backend
+      BACKEND_PORT: 5000
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  backend:
+    image: calculator-backend
+    build:
+      context: ./backend
+    pull_policy: build
+    networks:
+      - calc_net
+    environment:
+      DEBUG: True
+      ALLOWED_ORIGINS: '*'
+      POSTGRES_HOST: db
+      POSTGRES_USER: calc_user
+      POSTGRES_PASSWORD: securepassword
+      POSTGRES_DB: calc_db
+      POSTGRES_PORT: 5432
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    networks:
+      - calc_net
+    environment:
+      POSTGRES_USER: calc_user
+      POSTGRES_PASSWORD: securepassword
+      POSTGRES_DB: calc_db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  db_data:
+
+networks:
+  calc_net:
