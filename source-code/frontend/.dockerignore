@@ -1,8 +1,8 @@
-build/
-coverage/
-node_modules/
-README.md
-.env
-.env.tmp
-Dockerfile
-.gitignore
+**/build/
+**/coverage/
+**/node_modules/
+**/README.md
+**/.env
+**/.env.tmp
+**/Dockerfile
+**/.gitignore

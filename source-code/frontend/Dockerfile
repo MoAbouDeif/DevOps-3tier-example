@@ -1,10 +1,9 @@
 FROM node:24-alpine AS build
 
 ARG REACT_APP_API_BASE_URL=/api
-ENV REACT_APP_API_BASE_URL=$REACT_APP_API_BASE_URL
+ENV REACT_APP_API_BASE_URL=${REACT_APP_API_BASE_URL}
 
 WORKDIR /app
-
 COPY calculator-app/package*.json .
 RUN npm ci 
 
@@ -13,18 +12,20 @@ RUN npm run build
 
 FROM nginx:1.29-alpine3.22
 
-COPY --from=build app/build /usr/share/nginx/html
+ENV REACT_APP_API_BASE_URL=/api \
+    DOMAIN_NAME= \
+    BACKEND_HOST= \
+    BACKEND_PORT=
+
+COPY --from=build /app/build /usr/share/nginx/html
 
 COPY nginx.conf.tmp /etc/nginx/templates/nginx.conf.tmp 
+RUN rm -f /etc/nginx/conf.d/default.conf
 
 WORKDIR /app
-
-COPY entrypoint.sh .
-RUN chmod +x ./entrypoint.sh
+COPY 10-nginx-conf.sh /docker-entrypoint.d/10-nginx-conf.sh
+RUN chmod +x /docker-entrypoint.d/10-nginx-conf.sh
 
 EXPOSE 80
 
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-  CMD curl -sS http://localhost/healz/ || exit 1
-
-ENTRYPOINT [ "./entrypoint.sh" ]
+CMD ["nginx", "-g", "daemon off;"]

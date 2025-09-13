@@ -1,13 +1,13 @@
 # dependencies
-/node_modules
-/.pnp
+**/node_modules
+**/.pnp
 .pnp.js
 
 # testing
-/coverage
+**/coverage
 
 # production build
-/build
+**/build
 
 # misc
 .DS_Store
@@ -32,15 +32,15 @@ pnpm-debug.log*
 *.sw?
 
 # Optional cache folders
-/.eslintcache
-/.parcel-cache
-/.next
-/.nuxt
-/.turbo
-/dist
+**/.eslintcache
+**/.parcel-cache
+**/.next
+**/.nuxt
+**/.turbo
+**/dist
 
 # Byte-compiled / optimized / DLL files
-__pycache__/
+**/__pycache__/
 *.py[cod]
 *$py.class
 
