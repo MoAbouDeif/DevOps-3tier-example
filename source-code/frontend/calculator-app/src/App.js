@@ -63,7 +63,7 @@ function App() {
         </div>
 
         {loading && (
-          <div className="loader-overlay">
+          <div className="loader-overlay" data-testid="loader-overlay">
             <div className="loader"></div>
           </div>
         )}
