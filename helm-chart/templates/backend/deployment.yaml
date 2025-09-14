@@ -44,9 +44,9 @@ spec:
             - name: ALLOWED_ORIGINS
               value: {{ .Values.frontend.ingress.host | default .Values.domainName | quote }}
             - name: POSTGRES_HOST
-              value: {{ include "..fullname.backend" . }}
+              value: {{ include "postgresql.v1.primary.svc.headless" .Subcharts.postgresql }}
             - name: POSTGRES_PORT
-              value: "5432"
+              value: {{ .Values.postgresql.primary.service.ports.postgresql | quote}}
             - name: POSTGRES_DB
               value: {{ .Values.postgresql.auth.database }}
             - name: POSTGRES_USER

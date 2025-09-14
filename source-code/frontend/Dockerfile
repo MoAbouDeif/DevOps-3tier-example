@@ -12,19 +12,12 @@ RUN npm run build
 
 FROM nginx:1.29-alpine3.22
 
-ENV REACT_APP_API_BASE_URL=/api \
-    DOMAIN_NAME= \
-    BACKEND_HOST= \
-    BACKEND_PORT=
+RUN mkdir -p /var/cache/nginx /var/run /var/log/nginx /run \
+    && chown -R nginx:nginx /var/cache/nginx /var/run /var/log/nginx /etc/nginx /run
+
+USER nginx
 
 COPY --from=build /app/build /usr/share/nginx/html
 
-COPY nginx.conf.tmp /etc/nginx/templates/nginx.conf.tmp 
-RUN rm -f /etc/nginx/conf.d/default.conf
-
-COPY 10-nginx-conf.sh /docker-entrypoint.d/10-nginx-conf.sh
-RUN chmod +x /docker-entrypoint.d/10-nginx-conf.sh
-
 EXPOSE 80
-
 CMD ["nginx", "-g", "daemon off;"]

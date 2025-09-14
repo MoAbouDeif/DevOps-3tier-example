@@ -43,6 +43,7 @@ Selector labels for backend
 {{- define "..selectorLabels.backend" -}}
 app.kubernetes.io/name: {{ include "..fullname.backend" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+role: backend
 {{- end }}
 
 {{/*

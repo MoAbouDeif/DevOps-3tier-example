@@ -46,7 +46,7 @@ spec:
             - name: BACKEND_HOST
               value: {{ include "..fullname.backend" . }}
             - name: BACKEND_PORT
-              value: {{ .Values.backend.service.port }}
+              value: {{ .Values.backend.service.port | quote }}
           ports:
             - name: http
               containerPort: {{ .Values.frontend.service.port }}

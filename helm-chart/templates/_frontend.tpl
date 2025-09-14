@@ -43,6 +43,7 @@ Selector labels for frontend
 {{- define "..selectorLabels.frontend" -}}
 app.kubernetes.io/name: {{ include "..fullname.frontend" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+role: frontend
 {{- end }}
 
 {{/*
