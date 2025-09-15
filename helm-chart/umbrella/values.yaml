@@ -1,0 +1,247 @@
+nameOverride: ""
+fullnameOverride: ""
+domainName: "argo.local"
+
+frontend:
+  replicaCount: 2
+
+  image:
+    repository: deifops/frontend
+    pullPolicy: IfNotPresent
+    tag: "1.16"
+
+  imagePullSecrets: []
+
+  serviceAccount:
+    create: true
+    automount: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+
+  podLabels: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  ingress:
+    enabled: false
+    className: "alb"
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: ""
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+  resources: 
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  livenessProbe:
+    httpGet:
+      path: /healthz
+      port: http
+  readinessProbe:
+    httpGet:
+      path: /ready
+      port: http
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+  volumes: []
+  # - name: foo
+  #   secret:
+  #     secretName: mysecret
+  #     optional: false
+  volumeMounts: []
+  # - name: foo
+  #   mountPath: "/etc/foo"
+  #   readOnly: true
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+backend:
+  replicaCount: 2
+
+  image:
+    repository: deifops/backend
+    pullPolicy: IfNotPresent
+    tag: "1.16"
+
+  imagePullSecrets: []
+
+  serviceAccount:
+    create: true
+    automount: true
+    annotations: {}
+    name: ""
+
+  podAnnotations: {}
+
+  podLabels: 
+    deifops-postgresql-client: "true"
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: 
+    capabilities:
+      drop:
+      - ALL
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 1000
+
+  service:
+    type: ClusterIP
+    port: 5000
+
+  resources: 
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  livenessProbe:
+    httpGet:
+      path: /healthz
+      port: http
+  readinessProbe:
+    httpGet:
+      path: /ready
+      port: http
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+  volumes: 
+    - name: tmp-volume
+      emptyDir: {}
+  # - name: foo
+  #   secret:
+  #     secretName: mysecret
+  #     optional: false
+  volumeMounts: 
+    - name: tmp-volume
+      mountPath: /tmp
+  # - name: foo
+  #   mountPath: "/etc/foo"
+  #   readOnly: true
+
+  extraEnv:
+    - name: TMPDIR
+      value: /tmp
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+postgresql:
+  auth:
+    enablePostgresUser: true
+    postgresPassword: "root-pass"
+    ## @param auth.username Name for a custom user to create
+    ##
+    username: "test-user"
+    password: "test-pass"
+    database: "test-db"
+    ## @param auth.replicationUsername Name of the replication user
+    ##
+    replicationUsername: repl_user
+    replicationPassword: "repl_pass"
+    ## @param auth.existingSecret Name of existing secret to use for PostgreSQL credentials. `auth.postgresPassword`, `auth.password`, and `auth.replicationPassword` will be ignored and picked up from this secret. The secret might also contains the key `ldap-password` if LDAP is enabled. `ldap.bind_password` will be ignored and picked from this secret in this case.
+    ##
+    existingSecret: ""
+  
+  primary:
+    ## @param primary.name Name of the primary database (eg primary, master, leader, ...)
+    ##
+    name: primary
+    standby:
+      enabled: false
+      primaryHost: ""
+      primaryPort: ""
+    resources: {}
+      # requests:
+      #   cpu: 2
+      #   memory: 512Mi
+      # limits:
+      #   cpu: 3
+      #   memory: 1024Mi
+    networkPolicy:
+      enabled: false # keep false to override the builtin template
+      customNetworkPolicy:
+        enabled: true
+      allowExternal: false
+      allowExternalEgress: false
+      ingressNSMatchLabels: 
+        app.kubernetes.io/instance: "{{ .Release.Namespace }}"
+    ## PostgreSQL Primary service configuration
+    ##
+    service:
+      type: ClusterIP
+      ports:
+        postgresql: 5432
+    ## PostgreSQL Primary persistence configuration
+    ##
+    persistence:
+      enabled: false
+      volumeName: "data"
+      existingClaim: ""
+      mountPath: /bitnami/postgresql
+      subPath: ""
+      storageClass: ""
+      accessModes:
+        - ReadWriteOnce
+      size: 8Gi
+      ## @param primary.persistence.annotations Annotations for the PVC
+      ##
+      annotations: {}
+      ## @param primary.persistence.labels Labels for the PVC
+      ##
+      labels: {}
+      ## @param primary.persistence.selector Selector to match an existing Persistent Volume (this value is evaluated as a template)
+      ## selector:
+      ##   matchLabels:
+      ##     app: my-app
+      ##
+      selector: {}
+      ## @param primary.persistence.dataSource Custom PVC data source
+      ##
+      dataSource: {}

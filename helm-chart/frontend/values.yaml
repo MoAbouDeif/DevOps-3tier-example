@@ -108,7 +108,8 @@ backend:
 
   podAnnotations: {}
 
-  podLabels: {}
+  podLabels: 
+    deifops-postgresql-client: "true"
 
   podSecurityContext: {}
     # fsGroup: 2000
@@ -192,18 +193,6 @@ postgresql:
     ## @param primary.name Name of the primary database (eg primary, master, leader, ...)
     ##
     name: primary
-    initdb:
-      ## @param primary.initdb.scriptsSecret Secret with scripts to be run at first boot (in case it contains sensitive information)
-      ## NOTE: This can work along `primary.initdb.scripts` or `primary.initdb.scriptsConfigMap`
-      ##
-      scriptsSecret: ""
-    ## Configure current cluster's primary server to be the standby server in other cluster.
-    ## This will allow cross cluster replication and provide cross cluster high availability.
-    ## You will need to configure pgHbaConfiguration if you want to enable this feature with local cluster replication enabled.
-    ## @param primary.standby.enabled Whether to enable current cluster's primary as standby server of another cluster or not
-    ## @param primary.standby.primaryHost The Host of replication primary in the other cluster
-    ## @param primary.standby.primaryPort The Port of replication primary in the other cluster
-    ##
     standby:
       enabled: false
       primaryHost: ""
@@ -215,33 +204,14 @@ postgresql:
       # limits:
       #   cpu: 3
       #   memory: 1024Mi
-    
     networkPolicy:
-      ## @param primary.networkPolicy.enabled Specifies whether a NetworkPolicy should be created
-      ##
-      enabled: true
-      ## @param primary.networkPolicy.allowExternal Don't require server label for connections
-      ## The Policy model to apply. When set to false, only pods with the correct
-      ## server label will have network access to the ports server is listening
-      ## on. When true, server will accept connections from any source
-      ## (with the correct destination port).
-      ##
+      enabled: false # keep false to override the builtin template
+      customNetworkPolicy:
+        enabled: true
       allowExternal: false
-      ## @param primary.networkPolicy.allowExternalEgress Allow the pod to access any range of port and all destinations.
-      ##
       allowExternalEgress: false
-      ## @param primary.networkPolicy.extraIngress [array] Add extra ingress rules to the NetworkPolicy
-      ## e.g:
-      extraIngress: 
-        - ports:
-            - port: 5432
-          from:
-            - namespaceSelector:
-                matchLabels: 
-                  kubernetes.io/metadata.name: calc
-            # - podSelector:
-            #     matchLabels:
-            #         role: backend
+      ingressNSMatchLabels: 
+        app.kubernetes.io/instance: "{{ .Release.Namespace }}"
     ## PostgreSQL Primary service configuration
     ##
     service:
