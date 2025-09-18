@@ -24,8 +24,8 @@ server {
     }
 
     # API reverse proxy
-    location ${REACT_APP_API_BASE_URL} {
-        proxy_pass http://{{ .Values.domainName }}:{{ .Values.domainName }}/;
+    location /api {
+        proxy_pass http://{{ include "..fullname.backend" . }}:{{ .Values.backend.service.port }}/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
 

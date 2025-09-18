@@ -8,7 +8,7 @@ frontend:
   image:
     repository: deifops/frontend
     pullPolicy: IfNotPresent
-    tag: "1.16"
+    tag: "1.20"
 
   imagePullSecrets: []
 
@@ -25,13 +25,13 @@ frontend:
   podSecurityContext: {}
     # fsGroup: 2000
 
-  securityContext: {}
+  securityContext: 
     # capabilities:
     #   drop:
     #   - ALL
     # readOnlyRootFilesystem: true
     # runAsNonRoot: true
-    # runAsUser: 1000
+    # runAsUser: 101
 
   service:
     type: ClusterIP
@@ -101,15 +101,14 @@ backend:
   imagePullSecrets: []
 
   serviceAccount:
-    create: true
+    create: false
     automount: true
     annotations: {}
     name: ""
 
   podAnnotations: {}
 
-  podLabels: 
-    deifops-postgresql-client: "true"
+  podLabels: {}
 
   podSecurityContext: {}
     # fsGroup: 2000
@@ -137,11 +136,11 @@ backend:
   livenessProbe:
     httpGet:
       path: /healthz
-      port: http
+      port: 5000
   readinessProbe:
     httpGet:
       path: /ready
-      port: http
+      port: 5000
 
   autoscaling:
     enabled: true
@@ -151,22 +150,20 @@ backend:
     # targetMemoryUtilizationPercentage: 80
 
   volumes: 
-    - name: tmp-volume
+    - name: temp
       emptyDir: {}
   # - name: foo
   #   secret:
   #     secretName: mysecret
   #     optional: false
   volumeMounts: 
-    - name: tmp-volume
+    - name: temp 
       mountPath: /tmp
   # - name: foo
   #   mountPath: "/etc/foo"
   #   readOnly: true
 
-  extraEnv:
-    - name: TMPDIR
-      value: /tmp
+  extraEnv: []
 
   nodeSelector: {}
   tolerations: []
@@ -211,7 +208,7 @@ postgresql:
       allowExternal: false
       allowExternalEgress: false
       ingressNSMatchLabels: 
-        app.kubernetes.io/instance: "{{ .Release.Namespace }}"
+        kubernetes.io/metadata.name: "{{ .Release.Namespace }}"
     ## PostgreSQL Primary service configuration
     ##
     service:

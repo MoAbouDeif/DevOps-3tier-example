@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "..fullname.frontend" . }}
+data:
+  default.conf: |
+    {{ tpl ( required "Missing default.conf file" (.Files.Get "files/default.conf" )) . | nindent 4 }}
