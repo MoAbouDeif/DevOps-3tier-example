@@ -1,0 +1,58 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+spec:
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  source:
+    path: ''
+    repoURL: https://argoproj.github.io/argo-helm
+    targetRevision: 8.3.5
+    chart: argo-cd
+    helm:
+      values: |
+        global:
+          domain: argocd.deifops.click
+        configs:
+          params:
+            server.insecure: false
+        server:
+          ingress:
+            enabled: true
+            ingressClassName: alb
+            annotations:
+                kubernetes.io/ingress.class: alb
+                alb.ingress.kubernetes.io/backend-protocol: HTTPS
+                alb.ingress.kubernetes.io/ssl-redirect: 443
+                alb.ingress.kubernetes.io/scheme: internet-facing
+                alb.ingress.kubernetes.io/target-type: ip
+                alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+                alb.ingress.kubernetes.io/healthcheck-path: /healthz
+                alb.ingress.kubernetes.io/healthcheck-port: "8080"
+                alb.ingress.kubernetes.io/success-codes: '200'
+                external-dns.alpha.kubernetes.io/ingress-hostname-source: defined-hosts-only
+                external-dns.alpha.kubernetes.io/ttl: 300
+                external-dns.alpha.kubernetes.io/alias: true
+          ingressGrpc:
+            enabled: false
+            ingressClassName: alb   
+            hostname: "grpc.argocd.deifops.click"  
+            annotations:
+              kubernetes.io/ingress.class: alb
+              alb.ingress.kubernetes.io/group.name: deifops
+              alb.ingress.kubernetes.io/scheme: internet-facing
+              alb.ingress.kubernetes.io/target-type: ip
+              alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+              external-dns.alpha.kubernetes.io/ingress-hostname-source: defined-hosts-only
+              external-dns.alpha.kubernetes.io/ttl: 300
+              external-dns.alpha.kubernetes.io/alias: true
+  sources: []
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

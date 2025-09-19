@@ -1,6 +1,10 @@
 nameOverride: ""
 fullnameOverride: ""
-domainName: "argo.local"
+domainName: "calc.deifops.click"
+
+global:
+  security:
+    allowInsecureImages: true
 
 frontend:
   replicaCount: 2
@@ -38,13 +42,24 @@ frontend:
     port: 80
 
   ingress:
-    enabled: false
-    className: "alb"
-    annotations: {}
+    enabled: true
+    className: 'alb'
+    annotations: 
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/backend-protocol: HTTP
+      alb.ingress.kubernetes.io/ssl-redirect: "443"
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/target-type: ip
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+      alb.ingress.kubernetes.io/healthcheck-path: /healthz
+      alb.ingress.kubernetes.io/healthcheck-port: "80"
+      alb.ingress.kubernetes.io/success-codes: "200"
+      external-dns.alpha.kubernetes.io/ingress-hostname-source: defined-hosts-only
+
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
     hosts:
-      - host: ""
+      - host: "calc.deifops.click"
         paths:
           - path: /
             pathType: Prefix
@@ -170,6 +185,11 @@ backend:
   affinity: {}
 
 postgresql:
+  image:
+    registry: docker.io
+    repository: bitnamisecure/postgresql
+    tag: latest
+    digest: ""
   auth:
     enablePostgresUser: true
     postgresPassword: "root-pass"

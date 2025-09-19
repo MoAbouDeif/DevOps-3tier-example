@@ -19,8 +19,10 @@ RUN pip install --upgrade pip && \
 
 COPY . .
 
-RUN useradd --create-home backend
-USER backend
+RUN mkdir -p /var/temp
+
+RUN useradd --create-home backend -u 1001
+USER backend 
 
 EXPOSE 5000
 

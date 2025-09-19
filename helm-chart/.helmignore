@@ -21,4 +21,5 @@
 .idea/
 *.tmproj
 .vscode/
+# Unencrypted secret
 db-secret.yaml
