@@ -23,6 +23,14 @@ module "eks" {
     vpc-cni = {
       most_recent    = true
       before_compute = true
+      configuration_values = jsonencode({
+        env = {
+          ENABLE_PREFIX_DELEGATION = "true"
+          WARM_IP_TARGET = "5"
+          MINIMUM_IP_TARGET         = "10"
+          WARM_PREFIX_TARGET        = "1"
+        }
+      })
     }
     aws-ebs-csi-driver = {
       most_recent              = true
@@ -44,6 +52,8 @@ module "eks" {
   enable_irsa                              = true
   authentication_mode                      = "API_AND_CONFIG_MAP"
   include_oidc_root_ca_thumbprint          = true
+  create_node_security_group    = true
+
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets

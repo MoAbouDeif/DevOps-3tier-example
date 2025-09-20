@@ -1,13 +1,13 @@
 nameOverride: ""
 fullnameOverride: ""
-domainName: "calc.deifops.click"
+domainName: "argo.local"
 
 global:
   security:
     allowInsecureImages: true
 
 frontend:
-  replicaCount: 2
+  replicaCount: 1
 
   image:
     repository: deifops/frontend
@@ -42,7 +42,7 @@ frontend:
     port: 80
 
   ingress:
-    enabled: true
+    enabled: false
     className: 'alb'
     annotations: 
       kubernetes.io/ingress.class: alb
@@ -59,7 +59,7 @@ frontend:
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
     hosts:
-      - host: "calc.deifops.click"
+      - host: ""
         paths:
           - path: /
             pathType: Prefix
@@ -73,8 +73,8 @@ frontend:
       cpu: 100m
       memory: 128Mi
     requests:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 50m
+      memory: 64Mi
 
   livenessProbe:
     httpGet:
@@ -87,10 +87,10 @@ frontend:
 
   autoscaling:
     enabled: true
-    minReplicas: 2
-    maxReplicas: 100
+    minReplicas: 1
+    maxReplicas: 10
     targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
 
   volumes: []
   # - name: foo
@@ -106,7 +106,7 @@ frontend:
   affinity: {}
 
 backend:
-  replicaCount: 2
+  replicaCount: 1
 
   image:
     repository: deifops/backend
@@ -142,11 +142,11 @@ backend:
 
   resources: 
     limits:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 64m
+      memory: 150Mi
     requests:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 32m
+      memory: 100Mi
 
   livenessProbe:
     httpGet:
@@ -159,8 +159,8 @@ backend:
 
   autoscaling:
     enabled: true
-    minReplicas: 2
-    maxReplicas: 100
+    minReplicas: 1
+    maxReplicas: 10
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
 
@@ -200,27 +200,21 @@ postgresql:
     database: "test-db"
     ## @param auth.replicationUsername Name of the replication user
     ##
-    replicationUsername: repl_user
-    replicationPassword: "repl_pass"
+    replicationUsername: replica-user
+    replicationPassword: "replica-pass"
     ## @param auth.existingSecret Name of existing secret to use for PostgreSQL credentials. `auth.postgresPassword`, `auth.password`, and `auth.replicationPassword` will be ignored and picked up from this secret. The secret might also contains the key `ldap-password` if LDAP is enabled. `ldap.bind_password` will be ignored and picked from this secret in this case.
     ##
     existingSecret: ""
   
   primary:
-    ## @param primary.name Name of the primary database (eg primary, master, leader, ...)
-    ##
-    name: primary
-    standby:
-      enabled: false
-      primaryHost: ""
-      primaryPort: ""
-    resources: {}
-      # requests:
-      #   cpu: 2
-      #   memory: 512Mi
-      # limits:
-      #   cpu: 3
-      #   memory: 1024Mi
+    resources:
+      requests:
+        cpu: 500m
+        memory: 512Mi
+      limits:
+        cpu: 1
+        memory: 1024Mi
+
     networkPolicy:
       enabled: false # keep false to override the builtin template
       customNetworkPolicy:
@@ -262,3 +256,12 @@ postgresql:
       ## @param primary.persistence.dataSource Custom PVC data source
       ##
       dataSource: {}
+  readReplicas:
+    name: read
+    resources:
+      requests:
+        cpu: 500m
+        memory: 512Mi
+      limits:
+        cpu: 1
+        memory: 1024Mi

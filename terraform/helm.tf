@@ -187,6 +187,10 @@ resource "helm_release" "aws_load_balancer_controller" {
     {
       name  = "clusterSecretsPermissions.allowAllSecrets"
       value = true
+    },
+    {
+      name: "enableServiceSGTags"
+      value: true
     }
   ]
 }
