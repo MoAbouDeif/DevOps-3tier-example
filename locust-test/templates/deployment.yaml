@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: locust-master
+  labels:
+    app: locust
+    component: master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: locust
+      component: master
+  template:
+    metadata:
+      labels:
+        app: locust
+        component: master
+    spec:
+      containers:
+      - name: locust
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+        ports:
+        - containerPort: 8089
+          name: web
+        - containerPort: 5557
+          name: master
+        - containerPort: 5558
+          name: worker
+        env:
+        - name: LOCUST_MODE
+          value: "master"
+        - name: LOCUST_OPTS
+          value: "--host={{ .Values.config.backendHost }} --users={{ .Values.config.users }} --spawn-rate={{ .Values.config.spawnRate }} --run-time={{ .Values.config.runTime }}"
+        volumeMounts:
+        - name: locust-script
+          mountPath: /home/locust
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      volumes:
+      - name: locust-script
+        configMap:
+          name: locust-script
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: locust-worker
+  labels:
+    app: locust
+    component: worker
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: locust
+      component: worker
+  template:
+    metadata:
+      labels:
+        app: locust
+        component: worker
+    spec:
+      containers:
+      - name: locust
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+        env:
+        - name: LOCUST_MODE
+          value: "worker"
+        - name: LOCUST_MASTER_HOST
+          value: "locust-master"
+        volumeMounts:
+        - name: locust-script
+          mountPath: /home/locust
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      volumes:
+      - name: locust-script
+        configMap:
+          name: locust-script
